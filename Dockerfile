@@ -3,12 +3,13 @@ FROM ubuntu:bionic-20220427
 
 # set the github runner version
 ARG RUNNER_VERSION="2.294.0"
+ARG DOCKER_GROUP_ID=1002
 
 # update the base packages and add a non-sudo user
 RUN apt-get update -y \
     && apt-get upgrade -y \
-    && groupadd -g 994 docker \
-    && useradd -m -g 994 docker
+    && groupadd -g ${DOCKER_GROUP_ID} docker \
+    && useradd -m -g ${DOCKER_GROUP_ID} docker
 
 # install python and the packages the your code depends on along with jq so we can parse JSON
 # add additional packages as necessary
