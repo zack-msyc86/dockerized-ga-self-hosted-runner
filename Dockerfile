@@ -8,9 +8,10 @@ ARG DOCKER_GROUP_ID=1002
 # update the base packages and add a non-sudo user
 RUN apt-get update -y \
     && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends sudo \
     && groupadd -g ${DOCKER_GROUP_ID} docker \
-    && useradd -m -g ${DOCKER_GROUP_ID} docker
-
+    && useradd -m -g ${DOCKER_GROUP_ID} -G sudo docker
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 # install python and the packages the your code depends on along with jq so we can parse JSON
 # add additional packages as necessary
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -31,6 +32,10 @@ RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
 
 # install some additional dependencies
 RUN chown -R docker ~docker && /home/docker/actions-runner/bin/installdependencies.sh
+
+# install docker-compose
+RUN sudo curl -L https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose \
+    && sudo chmod +x /usr/local/bin/docker-compose
 
 # copy over the start.sh script
 COPY start.sh start.sh
