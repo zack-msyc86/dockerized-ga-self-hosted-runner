@@ -1,16 +1,23 @@
-version: '3'
+version: '3.9'
+
 services:
-  runner:
-    build: 
-      context: .
-      args:
-        DOCKER_GROUP_ID: ${DOCKER_GROUP_ID}
+  runner1:
     restart: unless-stopped
+    image: myoung34/github-runner
     environment:
-      ACCESS_TOKEN: ${ACCESS_TOKEN}
-      OWNER: ${OWNER}
-      REPO: ${REPO}
-    deploy:
-      replicas: 4
+      RUNNER_WORKDIR: /tmp/runner/work_1
+    env_file:
+      - .env
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/runner:/tmp/runner
+  runner2:
+    restart: unless-stopped
+    image: myoung34/github-runner
+    environment:
+      RUNNER_WORKDIR: /tmp/runner/work_2
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/runner:/tmp/runner
